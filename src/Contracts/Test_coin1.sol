@@ -5,10 +5,8 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Simple_Token is ERC20 {
-    mapping(address => address[]) public send_history; 
-     mapping(address => address[]) public recieve_history; 
-    mapping(address => uint256[]) public s_amount; 
-    mapping(address => uint256[]) public r_amount; 
+    mapping(address => address[]) public _history; 
+    mapping(address => int256[]) public _amount; 
 
 
 
@@ -27,20 +25,17 @@ contract Simple_Token is ERC20 {
     function transfer(address recipient, uint256 amount) public virtual override returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         
-        send_history[_msgSender()].push(recipient);
-        s_amount[_msgSender()].push(amount);
-         recieve_history[recipient].push(_msgSender());
-                 r_amount[recipient].push(amount);
+        _history[_msgSender()].push(recipient);
+        
+        _amount[_msgSender()].push(-amount);
+        _history[recipient].push(_msgSender());
+        _amount[recipient].push(amount);
 
         
         return true;
     }
-    function getSenderHistory() public view  returns ( address[] memory add_arr ,  uint256[] memory amount  ) {
-         return (send_history[_msgSender()],s_amount[_msgSender()]);
-         
-         }
-         function getRecieverHistory() public view  returns ( address[] memory add_arr ,  uint256[] memory amount  ) {
-         return (recieve_history[_msgSender()],r_amount[_msgSender()]);
+    function getHistory() public view  returns ( address[] memory add_arr ,  uint256[] memory amount  ) {
+         return (_history[_msgSender()],_amount[_msgSender()]);
          
          }
    
